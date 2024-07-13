@@ -1,0 +1,111 @@
+// 语法版本是protobuf3
+syntax = "proto3";
+
+// 分号前代表文件的实际包路径
+// 分号后代表生成的go文件的逻辑所属包
+option go_package = "./esdeath_proto;esdeath_proto";
+option optimize_for = SPEED;
+
+import "google/protobuf/empty.proto";
+// service 的 root path,客户端的protocol文件的package 的此值和server端的要一致，不然路径会匹配不上
+package esdeath;
+
+
+// 定义一个服务， 指定其可以被远程调用的方法及其参数和返回类型
+// 在服务侧，服务端实现服务接口，运行一个 gRPC 服务器来处理客户端调用。
+// gRPC 底层架构会解码传入的请求，执行服务方法，编码服务应答。
+service Esdeath {
+  // 新增延迟消息,结果中的消息ID可用来取消延迟消息
+  rpc AddDelayMsg (DelayMsgAdd) returns (AddDelayMsgResult);
+  // 拉取延迟消息
+  rpc PullDelayMsg (DelayMsgPull) returns (PullDelayMsgResult);
+  // 消息消费响应,ACK 的细节实现应该有框架实现，而不应该让用户实现，用户理论上只需要告诉框架消费的状态
+  rpc AckDelayMsg (DelayMsgAck) returns (AckDelayMsgResult);
+  // 取消延迟消息
+  rpc CancelDelayMsg (DelayMsgCancel) returns (CancelDelayMsgResult);
+  // 获取角色信息（leader or follower）
+  rpc GetRole (google.protobuf.Empty) returns (RoleResult);
+}
+
+
+// 取消延迟消息请求
+message DelayMsgCancel {
+  string msgId = 1;
+}
+
+// 新增延迟消息请求
+message DelayMsgAdd {
+  int64 delayTime = 1;
+  string topic = 2;
+  string tag = 3;
+  string msgId = 4;
+  string payload = 5;
+}
+
+// 拉取延迟消息请求
+message DelayMsgPull {
+  string topic = 1;
+  string consumerGroup = 2;
+}
+
+enum AckStatus {
+  ACK = 0;
+  RECONSUME = 1;
+}
+
+// 消息消费请求
+message DelayMsgAck {
+  AckStatus status = 1;
+  string topic = 2;
+  string consumerGroup = 3;
+  string msgId = 4;
+}
+
+enum ResultStatus {
+  SUCCESS = 0;
+  FAIL = 1;
+  // 当客户端收到此状态时，应该通过getRole接口重新获取leader节点
+  REFUSE_BY_FOLLOWER = 2;
+  NO_MESSAGE = 3;
+}
+
+message BaseResult {
+  ResultStatus status = 1;
+  string desc = 2;
+}
+
+// 新增延迟消息响应
+message AddDelayMsgResult {
+  BaseResult baseResult = 1;
+  string msgId = 2;
+}
+
+// 拉取延迟消息响应
+message PullDelayMsgResult {
+  BaseResult baseResult = 1;
+  string topic = 2;
+  string tag = 3;
+  string msgId = 4;
+  string payload = 5;
+}
+
+// 取消延迟消息响应
+message CancelDelayMsgResult {
+  BaseResult baseResult = 1;
+}
+
+// ACK延迟消息响应
+message AckDelayMsgResult {
+  BaseResult baseResult = 1;
+}
+
+// 角色
+enum Role {
+  LEADER = 0;
+  FOLLOWER = 1;
+}
+
+message RoleResult {
+  BaseResult baseResult = 1;
+  Role role = 2;
+}

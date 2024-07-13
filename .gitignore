@@ -1,0 +1,12 @@
+.circleci
+*/snapshots
+*.bolt
+go.mod
+go.sum
+.idea
+esdeath_go
+/badger_db
+/raft_data
+lastVersion
+*.exe
+/log/

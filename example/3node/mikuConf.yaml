@@ -1,0 +1,9 @@
+##################
+## 业务服务开放地址
+join_handle_addr: "127.0.0.1:11002"
+# 当前节点的raft地址
+raft_node_addr: "127.0.0.1:12002"
+# 当前节点的raft id，非必填，如果不填则默认为raft_node_addr
+raft_node_id: "node3"
+# 要加入的集群的地址，非必填，如果是新的 follower 节点则必填
+join_addr: "127.0.0.1:11000"
