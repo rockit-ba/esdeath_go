@@ -2,6 +2,12 @@
 
 esdeath(艾斯德斯) 是一个专门用于解决延迟消息的分布式、强一致MQ系统。broker由go语言编写，可编译至大多数的操作系统进行运行。目前已实现java 客户端，并且集成springboot starter开箱即用。得益于grpc的兼容性，其它语言可方便地生成对应语言版本的client。
 
+java 客户端：
+
+https://github.com/rockit-ba/esdeath_cli_boot_starter.git
+
+或者 https://github.com/rockit-ba/esdeath_cli.git
+
 # 特点
 
 ## 支持任意时间的延迟消息
