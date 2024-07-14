@@ -46,12 +46,12 @@ func (f *fsm) Restore(rc io.ReadCloser) error {
 		log.Info("out Restore")
 	}()
 	// 读取快照数据
-	return f.RaftLoad(rc)
+	return f.ReLoad(rc)
 }
 
 func (f *fsm) Persist(sink raft.SnapshotSink) error {
 	err := func() error {
-		if err := f.RaftBackup(sink); err != nil {
+		if err := f.Backup(sink); err != nil {
 			return err
 		}
 		return sink.Close()
